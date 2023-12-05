@@ -1,9 +1,6 @@
 def call (image) {
     pipeline {
         agent any
-        parameters {
-            booleanParam(defaultValue: false, description: 'Deploy the App', name:'DEPLOY')
-        }
         stages {
             stage('Python Lint') {
                 steps {
@@ -33,18 +30,6 @@ def call (image) {
                     withCredentials([string(credentialsId: 'DockerHub', variable: 'TOKEN')]) {
                             sh "docker build -t dislocatedleg/${image} ${image}/"
                             sh "docker push dislocatedleg/${image}"
-                    }
-                }
-            }
-            stage('Deploy') {
-                when {
-                    expression { params.DEPLOY }
-                }
-                steps {
-                    sshagent(['docker-vm']) {
-                        sh "ssh -o StrictHostKeyChecking=no -l azureuser acit3855docker.westus3.cloudapp.azure.com 'git -C acit3855/ pull'"
-                        sh "ssh -o StrictHostKeyChecking=no -l azureuser acit3855docker.westus3.cloudapp.azure.com 'docker pull dislocatedleg/$image'"
-                        sh "ssh -o StrictHostKeyChecking=no -l azureuser acit3855docker.westus3.cloudapp.azure.com 'docker compose -f acit3855/deployment/docker-compose.yml up -d'"
                     }
                 }
             }
