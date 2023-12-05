@@ -6,8 +6,10 @@ def call (image) {
         }
         stages {
             stage('Python Lint') {
-                    sh "pylint --fail-under=5.0 --disable=E0401 ${image}/app.py"                       
-                }
+                steps {
+                    sh "pylint --fail-under=5.0 --disable=E0401 ${image}/app.py"     
+                }                  
+            }
             stage('Security') {
                 steps {
                     // install docker scout
