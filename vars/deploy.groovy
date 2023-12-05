@@ -6,6 +6,7 @@ pipeline {
                 expression { params.DEPLOY }
             }
             steps {
+                withCredentials([string(credentialsId: 'DockerHub', variable: 'TOKEN')]) {
                 sshagent(['docker-vm']) {
                     sh "ssh -o StrictHostKeyChecking=no -l azureuser acit3855docker.westus3.cloudapp.azure.com 'git -C acit3855/ pull'"
                     sh "ssh -o StrictHostKeyChecking=no -l azureuser acit3855docker.westus3.cloudapp.azure.com 'docker pull dislocatedleg/audit_log && docker pull dislocatedleg/processing && docker pull dislocatedleg/receiver && docker pull dislocatedleg/storage'"
